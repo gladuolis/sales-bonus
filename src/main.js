@@ -36,7 +36,7 @@ function analyzeSalesData(data, options) {
         !Array.isArray(data.products) || data.products.length === 0 ||
         !Array.isArray(data.purchase_records) || data.purchase_records.length === 0) {
         throw new Error('Некорректные входные данные');
-    }
+    }}
 
     // Проверка опций
     if (!options || typeof options !== 'object') {
@@ -79,12 +79,12 @@ function analyzeSalesData(data, options) {
             if (!product) return;
 
             // Точный расчет с промежуточным округлением
-            const itemRevenue = parseFloat((item.sale_price * item.quantity * (1 - item.discount / 100)).toFixed(2);
+            const itemRevenue = parseFloat((item.sale_price * item.quantity * (1 - item.discount / 100)).toFixed(2));
             const itemCost = parseFloat((product.purchase_price * item.quantity).toFixed(2));
             const itemProfit = parseFloat((itemRevenue - itemCost).toFixed(2));
 
-            seller.revenue = parseFloat((parseFloat(seller.revenue) + parseFloat(itemRevenue)).toFixed(2);
-            seller.profit = parseFloat((parseFloat(seller.profit) + parseFloat(itemProfit)).toFixed(2);
+            seller.revenue = parseFloat((parseFloat(seller.revenue) + parseFloat(itemRevenue)).toFixed(2));
+            seller.profit = parseFloat((parseFloat(seller.profit) + parseFloat(itemProfit)).toFixed(2));
 
             // Учет проданных товаров
             seller.products_sold[item.sku] = (seller.products_sold[item.sku] || 0) + item.quantity;
@@ -93,5 +93,5 @@ function analyzeSalesData(data, options) {
 
     // Преобразование и сортировка
     const sortedSellers = Object.values(sellerStats).sort((a, b) => 
-        parseFloat(b.profit) - parseFloat(a.profit)
+        parseFloat(b.profit) - parseFloat(a.profit))
    
