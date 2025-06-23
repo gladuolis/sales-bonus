@@ -72,8 +72,8 @@ function analyzeSalesData(data, options) {
     const productIndex = Object.fromEntries(data.products.map(item => [item.sku, item]));
 
     // @TODO: Расчет выручки и прибыли для каждого продавца
-    data.purchase_records.forEach(record => { // Чек 
-        const seller = sellerIndex[record.seller_id]; // Продавец
+    data.purchase_records.forEach(record => {  
+        const seller = sellerIndex[record.seller_id]; 
 
         // Увеличить количество продаж 
         // Увеличить общую сумму всех продаж
@@ -87,12 +87,9 @@ function analyzeSalesData(data, options) {
         // Расчёт прибыли для каждого товара
         record.items.forEach(item => {
             const product = productIndex[item.sku]; // Товар
-            // Посчитать себестоимость (cost) товара как product.purchase_price, умноженную на количество товаров из чека
             const cost = product.purchase_price * item.quantity;
-            // Посчитать выручку (revenue) с учётом скидки через функцию calculateSimpleRevenue
             const rev = calculateRevenue(item);
 
-            // Посчитать прибыль: выручка минус себестоимость
             // Увеличить общую накопленную прибыль (profit) у продавца 
             sellerStats.map(value => {
                 if (value.id === seller.id) {
@@ -101,7 +98,6 @@ function analyzeSalesData(data, options) {
                     if (!value.products_sold[item.sku]) {
                         value.products_sold[item.sku] = 0;
                     }
-                    // По артикулу товара увеличить его проданное количество у продавца
                     value.products_sold[item.sku] += item.quantity;
                 }
             })
@@ -124,12 +120,12 @@ function analyzeSalesData(data, options) {
 
     // @TODO: Подготовка итоговой коллекции с нужными полями
     return sellerStats.map(seller => ({
-        seller_id: seller.id,// Строка, идентификатор продавца
-        name: seller.name, // Строка, имя продавца
-        revenue: +seller.revenue.toFixed(2), // Число с двумя знаками после точки, выручка продавца
-        profit: +seller.profit.toFixed(2), // Число с двумя знаками после точки, прибыль продавца
-        sales_count: seller.sales_count,// Целое число, количество продаж продавца
-        top_products: seller.top_products, // Целое число, топ-10 товаров продавца
-        bonus: seller.bonus, // Число с двумя знаками после точки, бонус продавца
+        seller_id: seller.id,
+        name: seller.name, 
+        revenue: +seller.revenue.toFixed(2), 
+        profit: +seller.profit.toFixed(2), 
+        sales_count: seller.sales_count,
+        top_products: seller.top_products, 
+        bonus: seller.bonus, 
     }));
 }
