@@ -34,7 +34,7 @@ function analyzeSalesData(data, options) {
     if (!data || typeof data !== 'object' ||
         !Array.isArray(data.sellers) || data.sellers.length === 0 ||
         !Array.isArray(data.products) || data.products.length === 0 ||
-        !Array.isArray(data.purchase_records)) {
+        !Array.isArray(data.purchase_records) || data.purchase_records.length === 0) {
         throw new Error('Некорректные входные данные');
     }
 
@@ -97,7 +97,7 @@ function analyzeSalesData(data, options) {
     // Преобразование в массив и сортировка по убыванию прибыли
     const sortedSellers = Object.values(sellerStats).sort((a, b) => b.profit - a.profit);
 
-    // Формирование результата
+    // Формирование результата с точным округлением
     return sortedSellers.map((seller, index, array) => {
         // Формирование топ-10 товаров
         const topProducts = Object.entries(seller.products_sold)
@@ -105,23 +105,17 @@ function analyzeSalesData(data, options) {
             .slice(0, 10)
             .map(([sku, quantity]) => ({ sku, quantity }));
 
+        // Точное округление до 2 знаков как в эталоне
+        const round = num => Math.round(num * 100) / 100;
+
         return {
             seller_id: seller.seller_id,
             name: seller.name,
-            revenue: parseFloat(seller.revenue.toFixed(2)),
-            profit: parseFloat(seller.profit.toFixed(2)),
+            revenue: round(seller.revenue),
+            profit: round(seller.profit),
             sales_count: seller.sales_count,
             top_products: topProducts,
-            bonus: parseFloat(calculateBonus(index, array.length, seller).toFixed(2))
+            bonus: round(calculateBonus(index, array.length, seller))
         };
     });
-}
-
-// Экспорт функций для тестов
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        calculateSimpleRevenue,
-        calculateBonusByProfit,
-        analyzeSalesData
-    };
 }
