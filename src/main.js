@@ -78,44 +78,20 @@ function analyzeSalesData(data, options) {
             const product = productIndex[item.sku];
             if (!product) return;
 
-            // Расчет выручки и прибыли
-            const revenue = calculateRevenue(item, product);
-            const cost = product.purchase_price * item.quantity;
-            const profit = revenue - cost;
+            // Точный расчет с промежуточным округлением
+            const itemRevenue = parseFloat((item.sale_price * item.quantity * (1 - item.discount / 100)).toFixed(2);
+            const itemCost = parseFloat((product.purchase_price * item.quantity).toFixed(2));
+            const itemProfit = parseFloat((itemRevenue - itemCost).toFixed(2));
 
-            seller.revenue += revenue;
-            seller.profit += profit;
+            seller.revenue = parseFloat((parseFloat(seller.revenue) + parseFloat(itemRevenue)).toFixed(2);
+            seller.profit = parseFloat((parseFloat(seller.profit) + parseFloat(itemProfit)).toFixed(2);
 
             // Учет проданных товаров
-            if (!seller.products_sold[item.sku]) {
-                seller.products_sold[item.sku] = 0;
-            }
-            seller.products_sold[item.sku] += item.quantity;
+            seller.products_sold[item.sku] = (seller.products_sold[item.sku] || 0) + item.quantity;
         });
     });
 
-    // Преобразование в массив и сортировка по убыванию прибыли
-    const sortedSellers = Object.values(sellerStats).sort((a, b) => b.profit - a.profit);
-
-    // Формирование результата с точным округлением
-    return sortedSellers.map((seller, index, array) => {
-        // Формирование топ-10 товаров
-        const topProducts = Object.entries(seller.products_sold)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10)
-            .map(([sku, quantity]) => ({ sku, quantity }));
-
-        // Точное округление до 2 знаков как в эталоне
-        const round = num => Math.round(num * 100) / 100;
-
-        return {
-            seller_id: seller.seller_id,
-            name: seller.name,
-            revenue: round(seller.revenue),
-            profit: round(seller.profit),
-            sales_count: seller.sales_count,
-            top_products: topProducts,
-            bonus: round(calculateBonus(index, array.length, seller))
-        };
-    });
-}
+    // Преобразование и сортировка
+    const sortedSellers = Object.values(sellerStats).sort((a, b) => 
+        parseFloat(b.profit) - parseFloat(a.profit)
+   
